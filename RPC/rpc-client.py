@@ -42,6 +42,6 @@ class FibonacciRpcClient(object):
 fibonacci_rpc = FibonacciRpcClient()
 number = int(sys.argv[1]) if len(sys.argv) >= 2 else 10
 
-print(' [x] Requesting fib({})', number)
+print(' [x] Requesting fib({})'.format(number))
 response = fibonacci_rpc.call(number)
 print(' [.] Got %r' % response)
