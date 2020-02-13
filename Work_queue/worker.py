@@ -18,6 +18,8 @@ def callback(ch, method, properties, body):
     ch.basic_ack(delivery_tag=method.delivery_tag)
 
 
+# Don't dispatch a new message to a worker until it has processed and acknowledged the previous one.
+# Instead, it will dispatch it to the next worker that is not still busy.
 channel.basic_qos(prefetch_count=1)
 channel.basic_consume(queue='avengers', on_message_callback=callback)
 
