@@ -17,6 +17,7 @@ class FibonacciRpcClient(object):
             on_message_callback=self.on_response,
             auto_ack=True
         )
+        self.queue = 'rpc-queue'
 
     def on_response(self, ch, method, props, body):
         if self.corr_id == props.correlation_id:
@@ -27,7 +28,7 @@ class FibonacciRpcClient(object):
         self.corr_id = str(uuid.uuid4())
         self.channel.basic_publish(
             exchange='',
-            routing_key='rpc_queue',
+            routing_key=self.queue,
             properties=pika.BasicProperties(
                 reply_to=self.calback_queue,
                 correlation_id=self.corr_id
@@ -42,6 +43,6 @@ class FibonacciRpcClient(object):
 fibonacci_rpc = FibonacciRpcClient()
 number = int(sys.argv[1]) if len(sys.argv) >= 2 else 10
 
-print(' [x] Requesting fib({})'.format(number))
+print('Requesting Fibonacci({})'.format(number))
 response = fibonacci_rpc.call(number)
-print(' [.] Got %r' % response)
+print('Got %r' % response)
