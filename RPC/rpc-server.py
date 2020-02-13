@@ -5,8 +5,9 @@ connection = pika.BlockingConnection(
     pika.ConnectionParameters(host='localhost')
 )
 
+queue_name = 'rpc_queue'
 channel = connection.channel()
-channel.queue_declare(queue='rpc_queue')
+channel.queue_declare(queue=queue_name)
 
 # 0, 1, 2, 3, 4, 5, 6,  7,  8,  9, 10, 11,  12,  13,  14
 # 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233, 377
@@ -23,7 +24,7 @@ def getFibonacci(n_th):
 
 def on_request(channel, method, props, body):
     number = int(body)
-    print(" [.] fibonacci(%s)" % number)
+    print("Fibonacci(%s)" % number)
     response = getFibonacci(number)
 
     channel.basic_publish(
@@ -38,9 +39,9 @@ def on_request(channel, method, props, body):
 
 channel.basic_qos(prefetch_count=1)
 channel.basic_consume(
-    queue='rpc_queue',
+    queue=queue_name,
     on_message_callback=on_request
 )
 
-print(" [x] Awaiting RPC requests")
+print("Awaiting RPC requests")
 channel.start_consuming()
